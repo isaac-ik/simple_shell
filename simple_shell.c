@@ -4,6 +4,26 @@
 #include <sys/wait.h>
 #include <string.h>
 
+char **splitCmd(char *cmdline, char *delim)
+{
+	char **argV;
+	char *token;
+	int i = 0;
+
+	/* Tokenizing the cmd */
+	token = strtok(cmdline, delim);
+	while (token != NULL)
+	{
+		argV[i] = token;
+		printf("the argument is %i is %s\n", i, argV[i]);
+		token = strtok(NULL, delim);
+		i++;
+	}
+	argV[i] = NULL;
+	
+	return (argV);
+}
+
 /**
  * main - entry point
  * Programmer: Isaac-ik
@@ -14,11 +34,11 @@
  */
 int main(int argc, char **argv)
 {
-	char *cmdline;
+	char *cmdline, *token, *cmd;
 	size_t n = 10;
 	ssize_t st;
 	char **argV, **envp = {NULL};
-	int ch2, i = 1;
+	int ch2, i = 0;
 	pid_t pid;
 	char *delim = " ";
 
@@ -33,16 +53,6 @@ int main(int argc, char **argv)
 		printf("Error 1\n");
 		return (-1);
 	}
-	/* Tokenizing the cmd */
-	argV = (char **)malloc(sizeof(char *) * 5);
-	argV[0] = strtok(cmdline, delim);
-	while (cmdline != NULL)
-	{
-		argV[i] = strtok(NULL, delim);
-		printf("the argument is %i is %s\n", i, argV[i]);
-		i++;
-	}
-	argV[i] = '\0';
 
 	/* create a child process */
 	pid = fork();
@@ -51,6 +61,7 @@ int main(int argc, char **argv)
 		printf("Error 3\n");
 		return (-1);
 	}
+	argV = splitCmd(cmdline, delim);
 	if (pid == 0)
 	{
 		/* exceute the prompt */
