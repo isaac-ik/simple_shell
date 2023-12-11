@@ -4,7 +4,7 @@
 #include <sys/wait.h>
 #include <string.h>
 
-int execueteCmd(char **args, char *cmdBuff);
+int execueteCmd(char **args, char *cmdBuff, char **env);
 
 /**
  * gettokens - part of the shell program
@@ -46,34 +46,38 @@ int main(int argc, char **argv)
 	size_t n = 10;
 	int status;
 	ssize_t e;
+	char **envp = {NULL};
 
-	cmdBuff = (char *)malloc((sizeof(char)) * n);
-	if (cmdBuff == NULL)
+	while (1)
 	{
-		return (-1);
-	}
-	printf("$ ");
+		cmdBuff = (char *)malloc((sizeof(char)) * n);
+		if (cmdBuff == NULL)
+		{
+			return (-1);
+		}
+		printf("$ ");
 
-	e = getline(&cmdBuff, &n, stdin);
-	if (e == -1)
-	{
-		printf("Error in getline\n ");
+		e = getline(&cmdBuff, &n, stdin);
+		if (e == -1)
+		{
+			printf("Error in getline\n ");
+			free(cmdBuff);
+			return (-1);
+		}
+
+		/* Allocate space for arguments */
+		char **args = malloc(sizeof(char *) * (n / 2));
+
+		gettokens(args, cmdBuff);
+
+		status = execueteCmd(args, cmdBuff, envp);
+		if (status == -1)
+			return (-1);
+
+		printf("No Error\n");
 		free(cmdBuff);
-		return (-1);
+		free(args);
 	}
-
-	/* Allocate space for arguments */
-	char **args = malloc(sizeof(char *) * (n / 2));
-
-	gettokens(args, cmdBuff);
-
-	status = execueteCmd(args, cmdBuff);
-	if (status == -1)
-		return (-1);
-
-	printf("No Error\n");
-	free(cmdBuff);
-	free(args);
 	return (0);
 }
 
@@ -86,7 +90,7 @@ int main(int argc, char **argv)
  * @cmdBuff: command text
  * Return: an integer
  */
-int execueteCmd(char **args, char *cmdBuff)
+int execueteCmd(char **args, char *cmdBuff, char **env)
 {
 	int v;
 	pid_t pid;
@@ -95,7 +99,7 @@ int execueteCmd(char **args, char *cmdBuff)
 	if (pid == 0)
 	{
 		/* Child process */
-		v = execvp(args[0], args); /* Use execvp to search for the command in PATH */
+		v = execve(args[0], args, env); /* Use execvp to search for the command in PATH */
 		if (v == -1)
 		{
 			printf("Error in execvp\n");
