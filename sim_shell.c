@@ -6,6 +6,14 @@
 
 int execueteCmd(char **args, char *cmdBuff);
 
+/**
+ * gettokens - part of the shell program
+ * Programmer: Isaac-ik
+ * Description: split the command text into tokens and stores in buffer space
+ * @argV: array of buffer space
+ * @cmdBuff: command text
+ * Return: an integer
+ */
 int gettokens(char **argV, char *cmdBuff)
 {
 	/* Tokenizing the command line input into arguments */
@@ -54,7 +62,9 @@ int main(int argc, char **argv)
 		return (-1);
 	}
 
-	char **args = malloc(sizeof(char *) * (n / 2)); /* Allocate space for arguments */
+	/* Allocate space for arguments */
+	char **args = malloc(sizeof(char *) * (n / 2));
+
 	gettokens(args, cmdBuff);
 
 	status = execueteCmd(args, cmdBuff);
@@ -62,12 +72,20 @@ int main(int argc, char **argv)
 		return (-1);
 
 	printf("No Error\n");
-        free(cmdBuff);
-        free(args);
-
-        return (0);
+	free(cmdBuff);
+	free(args);
+	return (0);
 }
 
+/**
+ * execueteCmd - shell proggram
+ * Programmer: Isaac-ik
+ * Description: executes the command from the argumnet buffer
+ * and free memory
+ * @args: arguments buffer
+ * @cmdBuff: command text
+ * Return: an integer
+ */
 int execueteCmd(char **args, char *cmdBuff)
 {
 	int v;
