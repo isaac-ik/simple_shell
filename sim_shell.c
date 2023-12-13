@@ -38,15 +38,17 @@ int gettokens(char **argV, char *cmdBuff)
  * Description: Simple shell program
  * @argc: number of arguments
  * @argv: argument vector
+ * @env: environmet variable
  * Return: an integer
  */
-int main(int argc, char **argv)
+int main(int argc, char **argv, char **env)
 {
 	char *cmdBuff;
 	size_t n = 10;
 	int status;
 	ssize_t e;
-	char **envp = {NULL};
+	char *path = "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/bin";
+	char *envp[] = { path };
 
 	while (1)
 	{
@@ -88,6 +90,7 @@ int main(int argc, char **argv)
  * and free memory
  * @args: arguments buffer
  * @cmdBuff: command text
+ * @env: enviromnent variable
  * Return: an integer
  */
 int execueteCmd(char **args, char *cmdBuff, char **env)
@@ -99,7 +102,8 @@ int execueteCmd(char **args, char *cmdBuff, char **env)
 	if (pid == 0)
 	{
 		/* Child process */
-		v = execve(args[0], args, env); /* Use execvp to search for the command in PATH */
+		v = execve(args[0], args, env);
+		/* Use execvp to search for the command in PATH */
 		if (v == -1)
 		{
 			printf("Error in execvp\n");
