@@ -42,14 +42,18 @@ int gettokens(char **argV, char *cmdBuff)
  * @env: environmet variable
  * Return: an integer
  */
-int main(int argc, char **argv, char **env)
+int main(int __attribute__((unused)) argc, char __attribute__((unused)) **argv, char __attribute__((unused)) **env)
 {
 	char *cmdBuff;
 	size_t n = 10;
 	int status;
 	ssize_t e;
-	char *path = "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/bin";
-	char *envp[] = { NULL };
+	char *PATH = "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/bin";
+	char *envp[2];
+	char **args;
+
+	envp[0] = PATH;
+	envp[1] = NULL;
 
 	while (1)
 	{
@@ -69,7 +73,7 @@ int main(int argc, char **argv, char **env)
 		}
 
 		/* Allocate space for arguments */
-		char **args = malloc(sizeof(char *) * (n / 2));
+		args = malloc(sizeof(char *) * (n / 2));
 
 		gettokens(args, cmdBuff);
 
