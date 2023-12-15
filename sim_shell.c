@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <string.h>
+#include <errno.h>
 
 int execueteCmd(char **args, char *cmdBuff, char **env);
 
@@ -48,7 +49,7 @@ int main(int argc, char **argv, char **env)
 	int status;
 	ssize_t e;
 	char *path = "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/bin";
-	char *envp[] = { path };
+	char *envp[] = { NULL };
 
 	while (1)
 	{
@@ -106,6 +107,7 @@ int execueteCmd(char **args, char *cmdBuff, char **env)
 		/* Use execvp to search for the command in PATH */
 		if (v == -1)
 		{
+			printf("%d, the error is %s\n", errno, strerror(errno));
 			printf("Error in execvp\n");
 			free(cmdBuff);
 			free(args);
